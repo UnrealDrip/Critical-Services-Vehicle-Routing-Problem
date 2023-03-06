@@ -1,0 +1,8 @@
+HOSPITAL,(number-of-hospitals)
+(hospital-number),(hospital-x),(hospital-y)
+
+VEHICLES,(number-of-vehicles)
+(vehicle-number),(vehicle-start-x),(vehicle-start-y),(hospital-end-x),(hospital-end-y),capacity
+
+REQUESTS,(number-of-requests)
+(request-number),(request-start-x),(request-start-y),(hospital-end-x),(hospital-end-y)

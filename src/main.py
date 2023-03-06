@@ -6,8 +6,9 @@ def main():
 
     num_generations = 1000
 
+
     for generation in range(num_generations):
-        print(generation) 
+        print(generation)
     print("Finished Execution after " + str(time.time()-start_time))
 
 
