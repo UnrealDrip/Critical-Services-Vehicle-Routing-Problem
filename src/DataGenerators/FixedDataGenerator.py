@@ -1,7 +1,9 @@
 import random
-import Settings
 import multiprocessing
 import os
+import sys
+sys.path.append("V:/Critical-Services-Routing/src/ChromsomeFunctions")
+import Settings
 
 
 mode = Settings.mode
@@ -11,7 +13,8 @@ dataset_num = Settings.dataset_num
 #request_file = Settings.request_file
 num_hospitals = Settings.num_hospitals
 num_vehicles = Settings.num_vehicles
-num_requests = Settings.num_requests
+#num_requests = Settings.num_requests
+num_requests = [10,20,50,100,200,500,1000,2000,5000,10000]
 min_vehicle_capacity = Settings.min_vehicle_capacity
 max_vehicle_capacity= Settings.max_vehicle_capacity
 min_grid_size = Settings.min_grid_size
@@ -77,27 +80,22 @@ def requestFileMake(run):
                         break
             request_database.write(str(request_list))
 
-def chromosomeFileMake(run):
-    with open(f'V:\\Critical-Services-Routing\\src\\Data\\Fixed-Data\\ChromosomeFixedPool\\{num_requests}\\{mode}-{pop_chromosomes}.{run}-Chromosome-data.txt', 'w') as file:
+def chromosomeFileMake(run,type):
+    with open(f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests[type]}\\DataSet1-{num_requests[type]}.{run}-Chromosome-data.txt', 'w') as file:
 
         for i in range(num_chromosomes):
-            random_numbers = random.sample(range(0, pop_chromosomes+1), int(pop_chromosomes/2))
+            random_numbers = random.sample(range(0, num_requests[type]), int(num_requests[type]))
             chromosome = []
 
-            for j in range(int(pop_chromosomes)):
+            for j in range(int(num_requests[type])):
                 chromosome.append(0)
 
-            for a in range(int(pop_chromosomes/2)):
-                if random_numbers[a]%2 == 0:
-                    random_numbers.append(random_numbers[a]+1)
-                else:
-                    random_numbers.append(random_numbers[a]-1)
+            sorted_numbers = random_numbers
 
             sorted_numbers= sorted(random_numbers)
-            random_numbers = random.sample(range(0, int(pop_chromosomes)), int(pop_chromosomes))
+            random_numbers = random.sample(range(0, int(num_requests[type])), int(num_requests[type]))
 
-
-            for k in range(int(pop_chromosomes/2)):
+            for k in range(int(num_requests[type]/2)):
                 if random_numbers[0]>random_numbers[1]:
                     chromosome[random_numbers[0]]=sorted_numbers[1]
                     chromosome[random_numbers[1]]=sorted_numbers[0]
@@ -111,24 +109,26 @@ def chromosomeFileMake(run):
                 sorted_numbers.pop(0)
 
             file.write(str(chromosome)+"\n")
-    print(run)
+    print(str(run)+"Lool"+str(num_requests[type]))
 
 def renameFiles(run):
     oldFile = f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\{mode}-{pop_chromosomes}.{run}-Chromosome-data.txt'
     newFile = f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.{run}-Chromosome-data.txt'
     os.rename(oldFile,newFile)
 
+
 if __name__ == '__main__':
     processes = []
-    for run in range(dataset_num):
-        p1 = multiprocessing.Process(target=genericFileMake, args=(run,))
-        processes.append(p1)
-        p2 = multiprocessing.Process(target=requestFileMake, args=(run,))
-        processes.append(p2)
-        p3 = multiprocessing.Process(target=chromosomeFileMake, args=(run,))
-        processes.append(p3)
-        #p4 = multiprocessing.Process(target=renameFiles, args=(run,))
-        #processes.append(p4)
+    for type in range(10):
+        for run in range(dataset_num):
+            #p1 = multiprocessing.Process(target=genericFileMake, args=(run,))
+            #processes.append(p1)
+            #p2 = multiprocessing.Process(target=requestFileMake, args=(run,))
+            #processes.append(p2)
+            p3 = multiprocessing.Process(target=chromosomeFileMake, args=(run,type,))
+            processes.append(p3)
+            #p4 = multiprocessing.Process(target=renameFiles, args=(run,))
+            #processes.append(p4)
     for p in processes:
         p.start()
     for p in processes:
