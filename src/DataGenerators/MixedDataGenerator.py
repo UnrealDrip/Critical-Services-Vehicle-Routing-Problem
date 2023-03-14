@@ -2,7 +2,6 @@ import random
 import Settings
 import multiprocessing
 
-
 mode = Settings.mode
 emergency_ratio = Settings.emergency_ratio
 #data_file = Settings.data_file
@@ -18,11 +17,15 @@ max_grid_size = Settings.max_grid_size
 request_length= Settings.request_length
 pop_chromosomes = Settings.pop_chromosomes
 num_chromosomes = Settings.num_chromosomes
+min_region1_grid_size = Settings.min_region1_grid_size
+max_region1_grid_size = Settings.max_region1_grid_size
+min_region2_grid_size = Settings.min_region2_grid_size
+max_region2_grid_size = Settings.max_region1_grid_size
 
 def genericFileMake(run):
     print(run)
     hospital_data = {}
-    data_file = f'V:\\Critical-Services-Routing\\src\\Data\\Fixed-Data\\Fixed\\{num_requests}\\{mode}{num_requests}.{run}-Generic-data.txt'
+    data_file = f'V:\\Critical-Services-Routing\\src\\Data\\Mixed-Data\\Mixed\\{num_requests}\\{mode}{num_requests}.{run}-Generic-data.txt'
     file = open(data_file,'w+')
 
     file.write("HOSPITAL,{0}\n".format(num_hospitals))
@@ -37,14 +40,46 @@ def genericFileMake(run):
 
     file.write("VEHICLES,{0}\n".format(num_vehicles))
     for vehicle in range(num_vehicles):
-        random_hospital1 = random.choice(list(hospital_data.keys()))
-        hospital_x1 = str(hospital_data[random_hospital1]["x"])
-        hospital_y1 = str(hospital_data[random_hospital1]["y"])
-        random_capacity = str(random.randint(min_vehicle_capacity,max_vehicle_capacity))
-        random_hospital2 = random.choice(list(hospital_data.keys()))
-        hospital_x2 = str(hospital_data[random_hospital2]["x"])
-        hospital_y2 = str(hospital_data[random_hospital2]["y"])
-        file.write(str(vehicle) + "," + hospital_x1 + "," + hospital_y1 + "," + hospital_x2 + "," + hospital_y2+ ","+ random_capacity+"\n")
+        if random.random() <= emergency_ratio:
+            distribution_ratio = random.randint(1, 6)
+            random_capacity = str(random.randint(min_vehicle_capacity,max_vehicle_capacity))
+            if(distribution_ratio<=3):
+                random_x1 = str(random.randint(min_region1_grid_size, max_region1_grid_size))
+                random_y1 = str(random.randint(min_region1_grid_size, max_region1_grid_size))
+                random_x2 = str(random.randint(min_region1_grid_size, max_region1_grid_size))
+                random_y2 = str(random.randint(min_region1_grid_size, max_region1_grid_size))
+                file.write(str(vehicle) + "," + str(random_x1) + "," + str(random_y1) + "," + str(random_x2)+ "," +str(random_y2)+ ","+ str(random_capacity)+"\n")
+
+            elif (distribution_ratio>=5):
+                while True:
+                    random_x1 = random.randint(min_region2_grid_size, max_region2_grid_size)
+                    random_y1 = random.randint(min_region2_grid_size, max_region2_grid_size)
+                    random_x2 = random.randint(min_region2_grid_size, max_region2_grid_size)
+                    random_y2 = random.randint(min_region2_grid_size, max_region2_grid_size)
+                    if (random_x1 > max_region1_grid_size or random_x1 < min_region1_grid_size) and (random_y1 > max_region1_grid_size or random_y1 < min_region1_grid_size):
+                        if (random_x2 > max_region1_grid_size or random_x2 < min_region1_grid_size) and (random_y2 > max_region1_grid_size or random_y2 < min_region1_grid_size):
+                            break
+                file.write(str(vehicle) + "," + str(random_x1) + "," + str(random_y1) + "," + str(random_x2)+ "," +str(random_y2)+ ","+ str(random_capacity)+"\n")
+            elif(distribution_ratio==4):
+                while True:
+                    random_x1 = random.randint(min_grid_size, max_grid_size)
+                    random_y1 = random.randint(min_grid_size, max_grid_size)
+                    random_x2 = random.randint(min_grid_size, max_grid_size)
+                    random_y2 = random.randint(min_grid_size, max_grid_size)
+                    if (random_x1 > max_region2_grid_size or random_x1 < min_region2_grid_size) and (random_y1 > max_region2_grid_size or random_y1 < min_region2_grid_size):
+                        if (random_x2 > max_region2_grid_size or random_x2 < min_region2_grid_size) and (random_y2 > max_region2_grid_size or random_y2 < min_region2_grid_size):
+                            break
+                file.write(str(vehicle) + "," + str(random_x1) + "," + str(random_y1) + "," + str(random_x2)+ "," +str(random_y2)+ ","+ str(random_capacity)+"\n")
+        else:
+            random_hospital1 = random.choice(list(hospital_data.keys()))
+            hospital_x1 = str(hospital_data[random_hospital1]["x"])
+            hospital_y1 = str(hospital_data[random_hospital1]["y"])
+            random_capacity = str(random.randint(min_vehicle_capacity,max_vehicle_capacity))
+            random_hospital2 = random.choice(list(hospital_data.keys()))
+            hospital_x2 = str(hospital_data[random_hospital2]["x"])
+            hospital_y2 = str(hospital_data[random_hospital2]["y"])
+            file.write(str(vehicle) + "," + hospital_x1 + "," + hospital_y1 + "," + hospital_x2 + "," + hospital_y2+ ","+ random_capacity+"\n")
+
 
     file.write("REQUESTS,{0}\n".format(num_requests))
     for request in range(num_requests):
@@ -62,8 +97,8 @@ def genericFileMake(run):
 
 def requestFileMake(run):
     print(run)
-    data_file = f'V:\\Critical-Services-Routing\\src\\Data\\Fixed-Data\\Fixed\\{num_requests}\\{mode}{num_requests}.{run}-Generic-data.txt'
-    request_file = f'V:\\Critical-Services-Routing\\src\\Data\\Fixed-Data\\FixedRequestLocation\\{num_requests}\\{mode}{num_requests}.{run}-Request-data.txt'
+    data_file = f'V:\\Critical-Services-Routing\\src\\Data\\Mixed-Data\\Mixed\\{num_requests}\\{mode}{num_requests}.{run}-Generic-data.txt'
+    request_file = f'V:\\Critical-Services-Routing\\src\\Data\\Mixed-Data\\MixedRequestLocation\\{num_requests}\\{mode}{num_requests}.{run}-Request-data.txt'
     with open(request_file,'w') as request_database:
         with open(data_file,'r') as generic_file:
             request_list =[]
@@ -77,7 +112,7 @@ def requestFileMake(run):
             request_database.write(str(request_list))
 
 def chromosomeFileMake(run):
-    with open(f'V:\\Critical-Services-Routing\\src\\Data\\Fixed-Data\\ChromosomeFixedPool\\{num_requests}\\{mode}-{pop_chromosomes}.{run}-Chromosome-data.txt', 'w') as file:
+    with open(f'V:\\Critical-Services-Routing\\src\\Data\\Mixed-Data\\ChromosomeMixedPool\\{num_requests}\\{mode}-{pop_chromosomes}.{run}-Chromosome-data.txt', 'w') as file:
 
         for i in range(num_chromosomes):
             random_numbers = random.sample(range(0, pop_chromosomes+1), int(pop_chromosomes/2))
@@ -127,4 +162,3 @@ if __name__ == '__main__':
         p.start()
     for p in processes:
         p.join()
-

@@ -1,0 +1,118 @@
+import multiprocessing
+import random
+
+from Settings import dataset_num, num_requests, pop_chromosomes, num_chromosome_start, mode, num_vehicles
+
+vehicle_capacity = 1
+
+def get_random_chromosomes(dataset_num, run, pop_chromosomes, num_chromosome_start):
+    with open(f'Data/Chromosome-Data/DataSet-{dataset_num}/{num_requests}/DataSet{dataset_num}-{pop_chromosomes}.{run}-Chromosome-data.txt', 'r') as file:
+        contents = file.read()
+        lines = contents.split('\n')
+        random_indices = random.sample(range(0, pop_chromosomes+1), num_chromosome_start)
+        chromosomes = []
+        for index in random_indices:
+            selected_line = lines[index].lstrip('[{').rstrip(']}')
+            current_chromosome = list(map(int, selected_line.split(',')))
+            chromosomes.append(current_chromosome)
+        return current_chromosome
+
+def get_nonconsecutive_random_numbers(max_num, count):
+    # Generate the first random number
+    nums = [random.randint(0, max_num-1)]
+    # Keep generating random numbers until we have enough
+    while len(nums) < count:
+        # Generate a new random number
+        num = random.randint(0, max_num-1)
+        # Check if it is consecutive with the last number
+        if num != nums[-1] + 1:
+            nums.append(num)
+    return nums
+
+def find_index(selected_list, value):
+    try:
+        index = selected_list.index(value)
+    except ValueError:
+        index = -1
+    return index
+
+def get_requests(num_requests, mode, run):
+    with open(f'Data/{mode}-Data/{mode}RequestLocation/{num_requests}/{mode}{num_requests}.{run}-Request-data.txt', 'r') as file:
+        contents = file.read()
+        requests = eval(contents)
+    return requests
+
+def assign_request_to_vehicles(requests, selected_chromosome, num_vehicles, vehicle_capacity,run):
+    all_vehicle_routes = []
+    all_vehicle_end = []
+
+    # Read the vehicle data from the generic file
+    with open(f'V:\\Critical-Services-Routing\\src\\Data\\{mode}-Data\\{mode}\\{num_requests}\\{mode}{num_requests}.{run}-Generic-data.txt', 'r') as file:
+        vehicle_lines = file.readlines()[32:132]
+        for vehicle in range(num_vehicles):
+            vehicle_route = []
+            vehicle_line = vehicle_lines[vehicle]
+            vehicle_list = [int(x) for x in vehicle_line.split(',')]
+            vehicle_start = (vehicle_list[1],vehicle_list[2])
+            vehicle_end = (vehicle_list[3],vehicle_list[4])
+            vehicle_route.append(vehicle_start)
+            all_vehicle_routes.append(vehicle_route)
+            all_vehicle_end.append(vehicle_end)
+
+    # Assign requests to vehicles
+    for vehicle in range(num_vehicles):
+        vehicle_route = all_vehicle_routes[vehicle]
+        vehicle_index_route = []
+        random_numbers = get_nonconsecutive_random_numbers(len(selected_chromosome), vehicle_capacity)
+        random_index_values = []
+        random_values = []
+        random_values =
+        #print(len(random_values))
+        for current_index in range(len(random_numbers)):
+            index = selected_chromosome[random_numbers[current_index]]
+            random_index_values.append(index)
+        #print(random_index_values)
+        for current_index in range(len(random_index_values)):
+            random_value = random_index_values[current_index]
+            #print(random_value)
+            corresponding_index = 0
+            if (random_value % 2) == 0:
+                corresponding_index = random_value  + 1
+            else:
+                corresponding_index = random_value  - 1
+            #print(corresponding_index,random_value)
+            corresponding_random_value = find_index(selected_chromosome, corresponding_index)
+            print(correspondind_random_value)
+            #print(random_values)
+            random_values.append(corresponding_random_value)
+            #print(random_values)
+
+        #print(len(random_values))
+        #print(random_values)
+        random_values.sort()
+
+        for current_index in range(len(random_values)):
+            random_value = selected_chromosome[random_values[current_index]]
+            vehicle_index_route.append(random_value)
+
+        for current_index in range(len(vehicle_index_route)):
+            random_value = vehicle_index_route[current_index]
+            vehicle_route.append(requests[index])
+
+        vehicle_route.append(all_vehicle_end[vehicle])
+    print(all_vehicle_routes)
+    return all_vehicle_routes
+if __name__ == '__main__':
+    processes = []
+    for run in range(dataset_num):
+        p1 = multiprocessing.Process(target=assign_request_to_vehicles, args=(get_requests(num_requests, mode, run),get_random_chromosomes(dataset_num, run, pop_chromosomes, num_chromosome_start),num_vehicles, vehicle_capacity,run,))
+        processes.append(p1)
+        #p2 = multiprocessing.Process(target=requestFileMake, args=(run,))
+        #processes.append(p2)
+        #p3 = multiprocessing.Process(target=chromosomeFileMake, args=(run,))
+        #processes.append(p3)
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
+
