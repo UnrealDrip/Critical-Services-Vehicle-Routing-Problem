@@ -6,7 +6,7 @@ mode = "Mixed"
 #chromosome_file = f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.{run}-Chromosome-data.txt'
 
 #How many datasets to generate or run
-dataset_num = 10
+dataset_num = 1
 
 #Main Grid
 min_grid_size = 1

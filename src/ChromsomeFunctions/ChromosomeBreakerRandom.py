@@ -1,7 +1,13 @@
-import Settings
 import multiprocessing
 import random
 import math
+import sys
+sys.path.append("V:/Critical-Services-Routing/src/Settings")
+import Settings
+sys.path.append("V:/Critical-Services-Routing/src/FitnessFunctions")
+import Fitness
+sys.path.append("V:/Critical-Services-Routing/src/Tools")
+import Tools
 
 dataset_num = Settings.dataset_num
 num_requests = Settings.num_requests
@@ -40,8 +46,10 @@ def getChromosome (run) :
 
     #Calculate Euclidean Distance for each route
     #calculateEuclideanDistance(brokenChromosomes)
-    calculateTotalWaitTime(brokenChromosomes)
-    calculateTotalArrivalTime(brokenChromosomes)
+    Fitness.calculateTotalWaitTime(brokenChromosomes)
+    Fitness.calculateTotalArrivalTime(brokenChromosomes)
+    Fitness.calculateMaximumWaitTime(brokenChromosomes)
+    Fitness.calculateMaximumArrivalTime(brokenChromosomes)
     return brokenChromosomes
 
 def breakChromosome(selected_chromosome,file_run):
@@ -111,7 +119,7 @@ def breakChromosome(selected_chromosome,file_run):
             vehicle_index_route = []
             random_index_values = []
             temp_values = []
-            random_numbers = get_nonconsecutive_random_numbers(len(selected_chromosome), vehicle_capacity)
+            random_numbers = Tools.get_nonconsecutive_random_numbers(len(selected_chromosome), vehicle_capacity)
             random_values = random_numbers
 
             #Convert Random Numbers to Indexes in Chromosome
@@ -136,7 +144,7 @@ def breakChromosome(selected_chromosome,file_run):
             #Make the Values in Ascending order to maintain chromosome order
             for current_index in range(len(vehicle_index_route)):
                 index = vehicle_index_route[current_index]
-                index_position = find_index(selected_chromosome,index)
+                index_position = Tools.find_index(selected_chromosome,index)
                 temp_values.append((index,index_position))
 
             sorted_values_byChromsome = sorted(temp_values, key=lambda x: x[1])
@@ -171,82 +179,11 @@ def breakChromosome(selected_chromosome,file_run):
 
             #Add Vehicle Routes to All Vehicle Routes
             vehicle_route.append(all_vehicle_end[vehicle])
+            ##print(vehicle_route)
             all_vehicle_routes[vehicle] = vehicle_route
 
-    ##print (all_vehicle_routes)
+    #print (all_vehicle_routes)
     return all_vehicle_routes
-
-#Generates Non-Consecutive Random Numbers like 1,4,7,10
-def get_nonconsecutive_random_numbers(max_num, count):
-    run = True
-    #Loop to run until non-consecutive numbers are generated
-    while(run):
-        random_numbers = random.sample(range(0, max_num-1), count)
-        if(random_numbers[0]+3 <= random_numbers[1] or random_numbers[0]-3 >= random_numbers[1] ):
-            return random_numbers
-
-#Get Index of a Value from a List
-def find_index(selected_list, value):
-    try:
-        index = selected_list.index(value)
-    except ValueError:
-        index = -1
-        print("Value not found in List")
-    return index
-
-#Calculate Euclidean Distance using Formula : sqrt((x2-x1)^2 + (y2-y1)^2)
-def calculateEuclideanDistance(brokenChromosomes):
-    for chromosome in brokenChromosomes:
-        for vehicle_route in chromosome:
-            total_distance = 0
-            for i in range(len(vehicle_route)):
-                location_x1, location_y1 = vehicle_route[i]
-                if i == len(vehicle_route) - 1:
-                    break
-                location_x2, location_y2 = vehicle_route[i+1]
-                distance = math.sqrt((location_x2-location_x1)**2 + (location_y2-location_y1)**2)
-                total_distance += distance
-            #print(total_distance)
-            #print(int(total_distance))
-
-def calculateTotalWaitTime(brokenChromosomes):
-    for chromosome in brokenChromosomes:
-        chromosomeWaitTime = 0
-        chromosomeAverageWaitTime = 0
-        for vehicle_route in chromosome:
-            #Wait Time is the Distance between the first location and the location where the vehicle is waiting
-            totalVehicleWaitTime = 0
-            for location in vehicle_route:
-                #Check if location is a pickup location
-                if location[2]== True:
-                    #Quick Maths
-                    location_x1,location_y1=vehicle_route[0][0],vehicle_route[0][1]
-                    location_x2,location_y2=location[0],location[1]
-                    waitTime = math.sqrt((location_x2-location_x1)**2 + (location_y2-location_y1)**2)
-                    totalVehicleWaitTime += waitTime
-            #print("Vehicle :"+str(vehicle_route)+" Total Wait Time :"+str(totalVehicleWaitTime))
-            chromosomeWaitTime += totalVehicleWaitTime
-
-        chromosomeAverageWaitTime += chromosomeWaitTime/len(chromosome)
-        print("Average Wait Time :"+str(chromosomeAverageWaitTime))
-def calculateTotalArrivalTime(brokenChromosomes):
-    for chromosome in brokenChromosomes:
-        chromosomeArrivalTime = 0
-        chromosomeAverageArrivalTime = 0
-        for vehicle_route in chromosome:
-            totalVehicleArrivalTime = 0
-            for location in vehicle_route:
-                if location[2] == True and location[3] != -1:
-                    location_pair_1 = location[3]
-                    location_x1,location_y1=vehicle_route[0][0],vehicle_route[0][1]
-                    for i in range(len(vehicle_route)):
-                        if vehicle_route[i][3] == location_pair_1:
-                            location_x2,location_y2=vehicle_route[i][0],vehicle_route[i][1]
-                            arrivalTime = math.sqrt((location_x2-location_x1)**2 + (location_y2-location_y1)**2)
-                            totalVehicleArrivalTime += arrivalTime
-            chromosomeArrivalTime += totalVehicleArrivalTime
-        chromosomeAverageArrivalTime += chromosomeArrivalTime/len(chromosome)
-        print ("Average Arrival Time :"+str(chromosomeAverageArrivalTime))
 
 if __name__ == '__main__':
     processes = []
