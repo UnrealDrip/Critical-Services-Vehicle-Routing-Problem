@@ -26,7 +26,7 @@ emergency_ratio = 0.3
 #Generator Settings
 num_hospitals = 30
 num_vehicles = 100
-num_requests = 10
+num_requests = 20
 
 #Chromosome Settings
 chromosome_length = num_requests*2+1
