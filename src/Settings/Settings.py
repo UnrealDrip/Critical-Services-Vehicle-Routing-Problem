@@ -26,7 +26,7 @@ emergency_ratio = 0.3
 #Generator Settings
 num_hospitals = 30
 num_vehicles = 100
-num_requests = 20
+num_requests = 200
 
 #Chromosome Settings
 chromosome_length = num_requests*2+1
@@ -42,7 +42,7 @@ min_vehicle_capacity = 1
 max_vehicle_capacity= 3
 
 #Chromsome Sampling Settings
-num_chromosome_start =10
+num_chromosome_start =1
 vehicle_rounds = num_requests/(num_vehicles*vehicle_capacity)
 
 
