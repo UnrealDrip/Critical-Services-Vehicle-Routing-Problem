@@ -5,6 +5,9 @@ mode = "Mixed"
 #request_file = f'V:\\Critical-Services-Routing\\src\\Data\\{mode}-Data\\{mode}RequestLocation\\{num_requests}\\{mode}{num_requests}.{run}-Request-data.txt'
 #chromosome_file = f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.{run}-Chromosome-data.txt'
 
+#Run
+numRun = 10
+
 #How many datasets to generate or run
 dataset_num = 1
 
@@ -42,7 +45,7 @@ min_vehicle_capacity = 1
 max_vehicle_capacity= 3
 
 #Chromsome Sampling Settings
-num_chromosome_start =1
+num_chromosome_start = 10
 vehicle_rounds = num_requests/(num_vehicles*vehicle_capacity)
 
 

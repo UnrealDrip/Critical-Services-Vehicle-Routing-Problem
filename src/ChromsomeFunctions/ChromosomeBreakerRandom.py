@@ -18,20 +18,21 @@ vehicle_capacity = Settings.vehicle_capacity
 num_vehicles = Settings.num_vehicles
 vehicle_rounds = Settings.vehicle_rounds
 
+run = 1
 current_chromosome = []
 brokenChromosomes = []
 
 
-def getChromosome (run) :
+def getChromosome () :
     try:
-        with open(f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.{run}-Chromosome-data.txt', 'r') as file:
+        with open(f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.1-Chromosome-data.txt', 'r') as file:
             contents = file.read()
     except (FileNotFoundError) as e:
         print(f"Error: {e}")
         contents = None
 
     lines = contents.split('\n')
-
+    original_chromosomes = []
     random_index = random.sample(range(0,pop_chromosomes+1),num_chromosome_start)
 
     #Get Random Chromosome from File
@@ -41,16 +42,13 @@ def getChromosome (run) :
         random_index.pop(0)
         current_chromosome = list(map(int, selected_line.split(',')))
 
+        original_chromosomes.append(current_chromosome)
         #break chromosome into many routes
         brokenChromosomes.append(breakChromosome(current_chromosome,run))
 
     #Calculate Euclidean Distance for each route
     #calculateEuclideanDistance(brokenChromosomes)
-    Fitness.calculateTotalWaitTime(brokenChromosomes)
-    Fitness.calculateTotalArrivalTime(brokenChromosomes)
-    Fitness.calculateMaximumWaitTime(brokenChromosomes)
-    Fitness.calculateMaximumArrivalTime(brokenChromosomes)
-    return brokenChromosomes
+    return brokenChromosomes,original_chromosomes
 
 def breakChromosome(selected_chromosome,file_run):
     vehicle_rounds = int((len(selected_chromosome)/2)/num_vehicles)

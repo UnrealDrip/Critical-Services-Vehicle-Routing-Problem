@@ -1,10 +1,11 @@
 import math
 
-def calculateTotalWaitTime(brokenChromosomes):
-    for chromosome in brokenChromosomes:
+def calculateTotalWaitTime(brokenChromosomes,original_chromosomes):
+    calculatedChromosomes = []
+    for i in range(len(brokenChromosomes)):
         chromosomeWaitTime = 0
         chromosomeAverageWaitTime = 0
-        for vehicle_route in chromosome:
+        for vehicle_route in brokenChromosomes[i]:
             #Wait Time is the Distance between the first location and the location where the vehicle is waiting
             totalVehicleWaitTime = 0
             for location in vehicle_route:
@@ -18,8 +19,11 @@ def calculateTotalWaitTime(brokenChromosomes):
             #print("Vehicle :"+str(vehicle_route)+" Total Wait Time :"+str(totalVehicleWaitTime))
             chromosomeWaitTime += totalVehicleWaitTime
 
-        chromosomeAverageWaitTime += chromosomeWaitTime/len(chromosome)
-        print("Average Wait Time :"+str(chromosomeAverageWaitTime))
+        chromosomeAverageWaitTime += chromosomeWaitTime/len(brokenChromosomes[i])
+        #print("Average Wait Time :"+str(chromosomeAverageWaitTime))
+        calculatedChromosomes.append((chromosomeAverageWaitTime,original_chromosomes[i]))
+    sortedCalculatedChromosomes = sorted(calculatedChromosomes,key = lambda x: x[0])
+    return sortedCalculatedChromosomes
 
 def calculateMaximumWaitTime(brokenChromosomes):
     for chromosome in brokenChromosomes:

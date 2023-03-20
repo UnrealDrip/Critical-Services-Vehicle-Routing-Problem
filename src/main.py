@@ -1,47 +1,85 @@
-import time
-import DataGenerator
+import numpy as np
+import random
+import sys
+sys.path.append("V:/Critical-Services-Routing/src/Settings")
+import Settings
+sys.path.append("V:\Critical-Services-Routing\src\ChromsomeFunctions")
+import ChromosomeBreakerRandom
+sys.path.append("V:/Critical-Services-Routing/src/FitnessFunctions")
+import Fitness
+
+numRun = Settings.numRun
+
 
 
 def main():
-    start_time = time.time()
+    brokenChromosomes = []
+    original_chromosomes = []
+    brokenChromosomes,original_chromosomes = ChromosomeBreakerRandom.getChromosome()
+    for i in range (1):
+        pop_fitness = 0
+        current_index = 0
+        corresponding_index = 0
+        percentGoOn = 0.2
+        chromosome_probabilities = []
+        calculatedChromosomes = Fitness.calculateTotalWaitTime(brokenChromosomes,original_chromosomes)
+        bestPercentChromosome = []
+        bestIndex = int(len(calculatedChromosomes) * percentGoOn)
+        bestPercentChromosome = calculatedChromosomes[:bestIndex]
+        copyBestPercentChromosome = calculatedChromosomes[:bestIndex]
+        nextPopulation = calculatedChromosomes[:bestIndex]
 
-    num_generations = 1000
+        for j in range(len(bestPercentChromosome)):
+            pop_fitness += 1/bestPercentChromosome[j][0]
 
-    print("Finished Execution after " + str(time.time()-start_time))
+        for j in range(len(bestPercentChromosome)):
+            chromosome_probabilities.append((1/bestPercentChromosome[j][0])/pop_fitness)
+
+        for j in range (len(calculatedChromosomes) - len(bestPercentChromosome)):
+            swapIndex = []
+            otherIndex = []
+            randomPair = np.random.choice(len(bestPercentChromosome),2, p =chromosome_probabilities)
+            #print(bestPercentChromosome[randomPair[0]][1])
+            for k in range(len(bestPercentChromosome[randomPair[0]][1])):
+                #print(randomPair)
+                current_index = copyBestPercentChromosome[randomPair[0]][1][k]
+                if current_index % 2 == 0:
+                    if random.uniform(0,1) < 0.5:
+                       #print(copyBestPercentChromosome[randomPair[0]][1])
+                       #print(current_index)
+                       #print(k)
+                       corresponding_index = bestPercentChromosome[randomPair[0]][1].index(current_index+1)
+                       swapIndex.append(current_index)
+                       swapIndex.append(current_index+1)
+                       copyBestPercentChromosome[randomPair[0]][1][corresponding_index] = -1
+                       copyBestPercentChromosome[randomPair[0]][1][k] = -1
+
+            swapIndexSorted = [swapIndexSorted[a] for a in sorted(range(len(bestPercentChromosome[randomPair[1]][1])), key=lambda k: bestPercentChromosome[randomPair[1]][1][k])]
+            for k in range(len(bestPercentChromosome[randomPair[1]][1])):
+                #print(k)
+                current_index = copyBestPercentChromosome[randomPair[1]][1][k]
+                print(copyBestPercentChromosome[randomPair[1]][1])
+                if current_index in swapIndex:
+                    otherIndex.append(current_index)
+
+            #print(len(otherIndex))
+            print(len(swapIndex))
+
+            count = 0
+            for k in range(len(bestPercentChromosome[randomPair[0]][1])):
+                current_index = copyBestPercentChromosome[randomPair[0]][1][k]
+                if current_index == -1 :
+                    #print(count)
+                    count += 1
+                    #print(len(otherIndex))
+                    current_index = otherIndex[0]
+                    otherIndex.pop(0)
+
+            #print(bestPercentChromosome[randomPair[0]][1])
+            #print(bestPercentChromosome[randomPair[1]][1])
+            #print(copyBestPercentChromosome[randomPair[0]][1])
+            nextPopulation.append(copyBestPercentChromosome[randomPair[0]][1])
+            copyBestPercentChromosome[randomPair[0]] = bestPercentChromosome[randomPair[0]]
 
 
-
-
-def generate_chromosome():
-    chromosome_length = num_requests*2+1
-
-    with open(data_file,'r') as file:
-        request_lines =range(num_hospitals+num_vehicles+4,num_hospitals+num_vehicles+num_requests+4)
-        chromosome =[]
-        random_numbers = random.sample(range(0, 2001), 2000)
-
-        for i in range(chromosome_length):
-            chromosome.append((0,0))
-
-        for i, line in enumerate(file):
-            if i+1 in request_lines:
-                request_segments = line.strip().split(",")
-
-                if random_numbers[0]>random_numbers[1]:
-                    chromosome[random_numbers[0]]=(int(request_segments[3]),int(request_segments[4]))
-                    chromosome[random_numbers[1]]=(int(request_segments[1]),int(request_segments[2]))
-                else:
-                    chromosome[random_numbers[0]]=(int(request_segments[1]),int(request_segments[2]))
-                    chromosome[random_numbers[1]]=(int(request_segments[3]),int(request_segments[4]))
-
-                random_numbers.pop(0)
-                random_numbers.pop(0)
-
-            elif i+1 > max(request_lines):
-                break
-
-        print(chromosome)
-
-generate_chromosome()
-if __name__ == '__main__':
-    main()
+main()

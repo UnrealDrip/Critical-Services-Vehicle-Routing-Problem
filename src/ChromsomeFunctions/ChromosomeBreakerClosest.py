@@ -15,10 +15,10 @@ vehicle_capacity = Settings.vehicle_capacity
 num_vehicles = Settings.num_vehicles
 vehicle_rounds = Settings.vehicle_rounds
 
-def getChromosome (run) :
+def getChromosome () :
     givenChromosomes = []
     try:
-        with open(f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.{run}-Chromosome-data.txt', 'r') as file:
+        with open(f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.1-Chromosome-data.txt', 'r') as file:
             contents = file.read()
     except (FileNotFoundError) as e:
         print(f"Error: {e}")
