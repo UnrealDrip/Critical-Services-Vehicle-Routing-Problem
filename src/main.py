@@ -28,6 +28,7 @@ def main():
         bestPercentChromosome = calculatedChromosomes[:bestIndex]
         copyBestPercentChromosome = calculatedChromosomes[:bestIndex]
         nextPopulation = calculatedChromosomes[:bestIndex]
+        swapIndexSorted = []
 
         for j in range(len(bestPercentChromosome)):
             pop_fitness += 1/bestPercentChromosome[j][0]
@@ -54,7 +55,7 @@ def main():
                        copyBestPercentChromosome[randomPair[0]][1][corresponding_index] = -1
                        copyBestPercentChromosome[randomPair[0]][1][k] = -1
 
-            swapIndexSorted = [swapIndexSorted[a] for a in sorted(range(len(bestPercentChromosome[randomPair[1]][1])), key=lambda k: bestPercentChromosome[randomPair[1]][1][k])]
+            #swapIndexSorted = [swapIndex[a] for a in sorted(range(len(bestPercentChromosome[randomPair[1]][1])), key=lambda k: bestPercentChromosome[randomPair[1]][1][k])]
             for k in range(len(bestPercentChromosome[randomPair[1]][1])):
                 #print(k)
                 current_index = copyBestPercentChromosome[randomPair[1]][1][k]
@@ -62,8 +63,9 @@ def main():
                 if current_index in swapIndex:
                     otherIndex.append(current_index)
 
-            #print(len(otherIndex))
-            print(len(swapIndex))
+            print(otherIndex)
+            swapIndexSorted = otherIndex
+            print(swapIndex)
 
             count = 0
             for k in range(len(bestPercentChromosome[randomPair[0]][1])):
@@ -72,8 +74,8 @@ def main():
                     #print(count)
                     count += 1
                     #print(len(otherIndex))
-                    current_index = otherIndex[0]
-                    otherIndex.pop(0)
+                    current_index = swapIndexSorted[0]
+                    swapIndexSorted.pop(0)
 
             #print(bestPercentChromosome[randomPair[0]][1])
             #print(bestPercentChromosome[randomPair[1]][1])
