@@ -22,7 +22,10 @@ def find_index(selected_list, value):
         index = selected_list.index(value)
     except ValueError:
         index = -1
-        print("Value not found in List")
+        all_numbers = set(range(200))
+        missing_numbers = all_numbers - set(selected_list)
+        print(sorted(list(missing_numbers)))
+        print("Value not found in List",value)
     return index
 
 #Calculate Euclidean Distance using Formula : sqrt((x2-x1)^2 + (y2-y1)^2)

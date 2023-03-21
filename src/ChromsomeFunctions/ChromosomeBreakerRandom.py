@@ -17,6 +17,7 @@ mode = Settings.mode
 vehicle_capacity = Settings.vehicle_capacity
 num_vehicles = Settings.num_vehicles
 vehicle_rounds = Settings.vehicle_rounds
+num_chromosomes = Settings.num_chromosomes
 
 run = 1
 current_chromosome = []
@@ -28,12 +29,12 @@ def getChromosome () :
         with open(f'V:\\Critical-Services-Routing\\src\\Data\\Chromosome-Data\\DataSet-1\\{num_requests}\\DataSet1-{pop_chromosomes}.1-Chromosome-data.txt', 'r') as file:
             contents = file.read()
     except (FileNotFoundError) as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}","getChromosome")
         contents = None
 
     lines = contents.split('\n')
     original_chromosomes = []
-    random_index = random.sample(range(0,pop_chromosomes+1),num_chromosome_start)
+    random_index = random.sample(range(0,num_chromosomes+1),num_chromosome_start)
 
     #Get Random Chromosome from File
     for chromosome in range(num_chromosome_start):
@@ -65,7 +66,7 @@ def breakChromosome(selected_chromosome,file_run):
         with open(f'V:\\Critical-Services-Routing\\src\\Data\\{mode}-Data\\{mode}\\{num_requests}\\{mode}{num_requests}.{file_run}-Generic-data.txt', 'r') as file:
             vehicle_lines = file.readlines()[32:132]
     except (FileNotFoundError) as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", "breakChromosome()")
         vehicle_lines = None
 
     #Get Start and End Locations for each Vehicle
@@ -96,7 +97,7 @@ def breakChromosome(selected_chromosome,file_run):
             contents = file.read()
             requests = eval(contents)
     except (FileNotFoundError) as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", "breakChromosome(2)")
         requests = None
 
     #Check Number of Times Vehicle has to be Routed
@@ -138,7 +139,11 @@ def breakChromosome(selected_chromosome,file_run):
                 #Get Corresponding Random Index Value
                 vehicle_index_route.append(index)
                 vehicle_index_route.append(corresponding_index)
-
+            ##TEST
+            all_numbers = set(range(200))
+            missing_numbers = all_numbers - set(selected_chromosome)
+            #print(sorted(list(missing_numbers)))
+            #print("Value not found in List",value)
             #Make the Values in Ascending order to maintain chromosome order
             for current_index in range(len(vehicle_index_route)):
                 index = vehicle_index_route[current_index]
