@@ -17,30 +17,43 @@ def main():
     nextPopulation = []
     original_chromosomes = []
     brokenChromosomes,original_chromosomes = ChromosomeBreakerRandom.getChromosome()
-    calculatedTotalWaitBefore = []
-    calculatedTotalWaitValue = []
-    for i in range (100):
+    for i in range (1000):
         pop_fitness = 0
         current_index = 0
         corresponding_index = 0
         percentGoOn = 0.2
+        mutatePercent = 0.1
+        mutateIndexPercent = 0.1
         chromosome_probabilities = []
         if i == 0:
-            calculatedChromosomes = Fitness.calculateTotalWaitTime(brokenChromosomes,original_chromosomes,calculatedTotalWaitBefore,calculatedTotalWaitValue)
+            calculatedChromosomes = Fitness.calculateTotalWaitTime(brokenChromosomes,original_chromosomes)
             print(len(calculatedChromosomes))
+            #print(calculatedChromosomes[0][0])
         else:
             brokenChromosomes = []
             original_chromosomes = []
-            print(nextPopulation)
+            temp = calculatedChromosomes[:bestIndex]
+            #print(temp)
             for j in range(len(nextPopulation)):
                 original_chromosomes.append(nextPopulation[j])
                 brokenChromosomes.append(ChromosomeBreakerRandom.breakChromosome(nextPopulation[j],1))
-            calculatedChromosomes,calculatedTotalWaitBefore,calculatedTotalWaitValue = Fitness.calculateTotalWaitTime(brokenChromosomes,original_chromosomes,calculatedTotalWaitBefore,calculatedTotalWaitValue)
-            print(calculatedChromosomes)
+            calculatedChromosomes = []
+            #print(len(brokenChromosomes),"brokenChromosomes")
+            #print(nextPopulation)
+            for j in range(len(temp)):
+                calculatedChromosomes.append(temp[j])
+            #print(len(calculatedChromosomes))
+            temp = Fitness.calculateTotalWaitTime(brokenChromosomes,original_chromosomes)
+            #print(temp)
+            for j in range(len(temp)):
+                calculatedChromosomes.append(temp[j])
+
+            #print(len(calculatedChromosomes))
+            calculatedChromosomes.sort(key=lambda x: x[0])
+            print(i,calculatedChromosomes[0][0])
         bestPercentChromosome = []
         bestIndex = int(len(calculatedChromosomes) * percentGoOn)
         copyBestPercentChromosome = calculatedChromosomes[:bestIndex]
-        print(bestIndex)
         swapIndexSorted = []
 
         for j in range(len(copyBestPercentChromosome)):
@@ -53,7 +66,8 @@ def main():
             bestPercentChromosome.append(copyBestPercentChromosome[j][1])
 
         copyBestPercentChromosome = bestPercentChromosome
-        nextPopulation = bestPercentChromosome
+        #print(len(calculatedChromosomes) - len(bestPercentChromosome))
+        nextPopulation = []
         #print(nextPopulation)
         #print(len(bestPercentChromosome))
         #print(len(chromosome_probabilities))
@@ -66,7 +80,6 @@ def main():
         """
         arrayBestPercentChromosome = np.array(bestPercentChromosome).astype(float)
         arrayChromosome_probabilities = np.array(chromosome_probabilities).astype(float)
-        print(len(bestPercentChromosome))
 
         for j in range (len(calculatedChromosomes) - len(bestPercentChromosome)):
             swapIndex = []
@@ -102,7 +115,7 @@ def main():
                     otherIndex.append(current_index)
 
             #print(otherIndex)
-            #print(swapIndex)
+            #print(swapIndexSorted)
 
             if(otherIndex == swapIndex):
                 print("sameBOYO")
@@ -139,8 +152,56 @@ def main():
             #print(nextPopulation)
 
             copyBestPercentChromosome[randomPair[0]] = bestPercentChromosome[randomPair[0]]
+
+        mutateNum = int(len(nextPopulation)*mutatePercent)
+        randomChromosomes = random.sample(nextPopulation,mutateNum)
+        mutatePopulation = randomChromosomes
+        print(mutatePopulation)
+        for j in range(len(mutatePopulation)):
+            mutateChromosome = mutatePopulation[j]
+            mutateIndexNum = int(len(mutateChromosome) * mutateIndexPercent)
+            randomIndex = random.sample(mutateChromosome,int(mutateIndexNum/2))
+            print(mutateChromosome)
+            randomIndex2 = random.sample(mutateChromosome,int(mutateIndexNum/2))
+            for i in range(len(randomIndex)):
+                index1 = randomIndex[i]
+                index_location = mutateChromosome.index(index1)
+                corresponding_index = randomIndex[i]+1
+                corresponding_index_location = mutateChromosome.index(corresponding_index)
+
+                index2 = randomIndex2[i]
+                index2_location = mutateChromosome.index(index2)
+                corresponding_index2 = randomIndex2[i]+1
+                corresponding_index2_location = mutateChromosome.index(corresponding_index2)
+
+                if(index2 % 2 == 0 and index1 % 2 == 0):
+                    if index2_location < corresponding_index_location and index_location < corresponding_index2_location:
+                        mutateChromosome[index_location] = index2
+                        mutateChromosome[index2_location] = index1
+                        print("mutate",index2,index1)
+                elif(index2 % 2 != 0 and index1 % 2 != 0):
+                    if index2_location > corresponding_index_location and index_location > corresponding_index2_location:
+                        mutateChromosome[index_location] = index2
+                        mutateChromosome[index2_location] = index1
+                        print("mutate",index2,index1)
+                elif(index2 % 2 == 0 and index1 % 2 != 0):
+                    if index2_location > corresponding_index_location and index_location < corresponding_index2_location:
+                        mutateChromosome[index_location] = index2
+                        mutateChromosome[index2_location] = index1
+                        print("mutate",index2,index1)
+                elif(index2 % 2 != 0 and index1 % 2 == 0):
+                    if index2_location < corresponding_index_location and index_location > corresponding_index2_location:
+                        mutateChromosome[index_location] = index2
+                        mutateChromosome[index2_location] = index1
+                        print("mutate",index2,index1)
+                print(mutateChromosome)
+
+        for j in range(len(nextPopulation)):
+            if nextPopulation[j] in mutatePopulation:
+                chromosome_index = mutatePopulation.index(nextPopulation[j])
+                nextPopulation[j] = mutatePopulation[chromosome_index]
         #print(copyBestPercentChromosome)
-        #print(nextPopulation)
+        #print(len(nextPopulation),"nextPopulation")
 
 
 main()

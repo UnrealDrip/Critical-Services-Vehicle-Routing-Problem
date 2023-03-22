@@ -1,36 +1,31 @@
 import math
 
-def calculateTotalWaitTime(brokenChromosomes,original_chromosomes,calculatedTotalWaitBefore,calculatedTotalWaitValue):
+def calculateTotalWaitTime(brokenChromosomes,original_chromosomes):
     calculatedChromosomes = []
     for i in range(len(brokenChromosomes)):
         chromosomeWaitTime = 0
         chromosomeAverageWaitTime = 0
-        if brokenChromosomes[i] in calculatedTotalWaitBefore:
-            print("Found")
-            calculatedChromosomes.append((calculatedTotalWaitValue[calculatedTotalWaitBefore.index(brokenChromosomes[i])],original_chromosomes[i]))
-        else:
-            for vehicle_route in brokenChromosomes[i]:
-                #Wait Time is the Distance between the first location and the location where the vehicle is waiting
-                totalVehicleWaitTime = 0
-                for location in vehicle_route:
-                    #Check if location is a pickup location
-                    if location[2]== True:
-                        #Quick Maths
-                        location_x1,location_y1=vehicle_route[0][0],vehicle_route[0][1]
-                        location_x2,location_y2=int(location[0]),int(location[1])
-                        waitTime = math.sqrt((location_x2-location_x1)**2 + (location_y2-location_y1)**2)
-                        totalVehicleWaitTime += waitTime
-                #print("Vehicle :"+str(vehicle_route)+" Total Wait Time :"+str(totalVehicleWaitTime))
-                chromosomeWaitTime += totalVehicleWaitTime
+        for vehicle_route in brokenChromosomes[i]:
+            #Wait Time is the Distance between the first location and the location where the vehicle is waiting
+            totalVehicleWaitTime = 0
+            for location in vehicle_route:
+                #Check if location is a pickup location
+                if location[2]== True:
+                    #Quick Maths
+                    location_x1,location_y1=vehicle_route[0][0],vehicle_route[0][1]
+                    location_x2,location_y2=int(location[0]),int(location[1])
+                    waitTime = math.sqrt((location_x2-location_x1)**2 + (location_y2-location_y1)**2)
+                    totalVehicleWaitTime += waitTime
+            #print("Vehicle :"+str(vehicle_route)+" Total Wait Time :"+str(totalVehicleWaitTime))
+            chromosomeWaitTime += totalVehicleWaitTime
 
-            chromosomeAverageWaitTime += chromosomeWaitTime/len(brokenChromosomes[i])
-            #print("Average Wait Time :"+str(chromosomeAverageWaitTime))
-            calculatedChromosomes.append((chromosomeAverageWaitTime,original_chromosomes[i]))
-            calculatedTotalWaitBefore.append(brokenChromosomes[i])
-            calculatedTotalWaitValue.append(chromosomeAverageWaitTime)
+        chromosomeAverageWaitTime += chromosomeWaitTime/len(brokenChromosomes[i])
+        #print("Average Wait Time :"+str(chromosomeAverageWaitTime))
+        calculatedChromosomes.append((chromosomeAverageWaitTime,original_chromosomes[i]))
 
     sortedCalculatedChromosomes = sorted(calculatedChromosomes,key = lambda x: x[0])
-    return sortedCalculatedChromosomes,calculatedTotalWaitBefore,calculatedTotalWaitValue
+    #print("Sorted Chromosomes :"+str(sortedCalculatedChromosomes))
+    return sortedCalculatedChromosomes
 
 def calculateMaximumWaitTime(brokenChromosomes):
     for chromosome in brokenChromosomes:
