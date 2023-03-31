@@ -45,7 +45,7 @@ min_vehicle_capacity = 1
 max_vehicle_capacity= 3
 
 #Chromsome Sampling Settings
-num_chromosome_start = 100
+num_chromosome_start = 1000
 vehicle_rounds = num_requests/(num_vehicles*vehicle_capacity)
 
 
